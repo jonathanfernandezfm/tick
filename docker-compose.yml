@@ -1,0 +1,22 @@
+services:
+  tick:
+    build: .
+    restart: unless-stopped
+    environment:
+      # Required. Coolify lists these as variables to fill in before the first deploy.
+      - TICK_EMAIL=${TICK_EMAIL:?Set TICK_EMAIL}
+      - TICK_PASSWORD=${TICK_PASSWORD:?Set TICK_PASSWORD}
+      # Optional. Leave empty to derive it from the credentials.
+      - TICK_SECRET=${TICK_SECRET:-}
+    volumes:
+      - tick-data:/data
+    ports:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  tick-data:
